@@ -20,6 +20,7 @@ public class JwtAuthService {
                 .subject(user.getId().toString())
                 .claim("email",user.getEmail())
                 .claim("roles",user.getRole())
+                .claim("type", "access")
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis()+1000*60*10))
                 .signWith(secretKey)
@@ -28,6 +29,7 @@ public class JwtAuthService {
     public String generateRefreshToken(User user){
         return Jwts.builder()
                 .subject(user.getId().toString())
+                .claim("type", "refresh")
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis()+1000*60*60*24*90))
                 .signWith(secretKey)
@@ -44,6 +46,11 @@ public class JwtAuthService {
 
     public Boolean isTokenValid(String token){
         return !isTokenExpired(token);
+    }
+
+    public String extractTokenType(String token) {
+        Claims claims = extractAllClaims(token);
+        return claims.get("type", String.class);
     }
     private Claims extractAllClaims(String token){
         return Jwts.parser()

@@ -45,11 +45,16 @@ public class JWTFilter extends OncePerRequestFilter {
                 filterChain.doFilter(request,response);
                 return;
             }
+            if (!"access".equals(jwtAuthService.extractTokenType(token))) {
+                filterChain.doFilter(request, response);
+                return;
+            }
             Long userId= jwtAuthService.extractUserId(token);
             User user=userRepository.findById(userId).orElse(null);
             if(user!=null&& SecurityContextHolder.getContext().getAuthentication()==null){
                 UsernamePasswordAuthenticationToken auth=new UsernamePasswordAuthenticationToken(user,null,user.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(auth);
+                log.info("Authenticated user: {}", user.getEmail());
 
             }
 

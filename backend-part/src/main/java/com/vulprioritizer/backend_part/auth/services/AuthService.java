@@ -77,7 +77,7 @@ public class AuthService {
                 .user(user)
                 .build();
         refreshTokenRepository.save(token);
-        return new LoginResponse(user.getId(),user.getEmail(), user.getRole(),accessToken,refreshToken);
+        return new LoginResponse(user.getId(),user.getEmail(), user.getRole(),refreshToken,accessToken);
     }
 
     public void logout(HttpServletRequest request, HttpServletResponse response) {
