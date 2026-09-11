@@ -53,6 +53,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiError> handleTokenRevokedException(TokenRevokedException exception,HttpServletRequest request){
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiError(exception.getMessage(),HttpStatus.UNAUTHORIZED,request.getRequestURI()));
     }
+    @ExceptionHandler(OperationNotAllowedException.class)
+    public ResponseEntity<ApiError> OperationNotAllowedExceptionException(OperationNotAllowedException exception,HttpServletRequest request){
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiError(exception.getMessage(),HttpStatus.UNAUTHORIZED,request.getRequestURI()));
+    }
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleException(Exception exception,HttpServletRequest request){
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiError(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, request.getRequestURI()));

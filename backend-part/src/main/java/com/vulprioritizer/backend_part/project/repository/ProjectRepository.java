@@ -1,0 +1,15 @@
+package com.vulprioritizer.backend_part.project.repository;
+
+import com.vulprioritizer.backend_part.project.dto.response.ProjectResponse;
+import com.vulprioritizer.backend_part.project.entity.Project;
+import com.vulprioritizer.backend_part.user.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.Optional;
+
+public interface ProjectRepository extends JpaRepository<Project, Long> {
+    Optional<Project> findByIdAndDeletedFalse(Long projectId);
+    Page<ProjectResponse> findByUserAndDeletedFalse(User user, Pageable pageable);
+}
