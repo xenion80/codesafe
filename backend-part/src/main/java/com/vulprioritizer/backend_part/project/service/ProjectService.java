@@ -41,31 +41,30 @@ public class ProjectService {
     }
 
     public ProjectResponse getProject(long projectId, User user) {
-        Project project=projectRepository.findByIdAndDeletedFalse(projectId).orElseThrow(()->new ResourceNotFoundException("resource with this project id is not found"));
-        if (!project.getUser().getId().equals(user.getId())){
-            throw new OperationNotAllowedException("Bad request");
-        }
+        Project project=getProjectAndCheckDetail(projectId,user);
         return modelMapper.map(project,ProjectResponse.class);
     }
 
-    public void  deleteProject(long projectId, User user) {
-        Project project=projectRepository.findByIdAndDeletedFalse(projectId).orElseThrow(()->new ResourceNotFoundException("resource with this project id is not found"));
-        if (!project.getUser().getId().equals(user.getId())){
-            throw new OperationNotAllowedException("Bad request");
-        }
+    public void  deleteProject(Long projectId, User user) {
+        Project project=getProjectAndCheckDetail(projectId,user);
         project.setDeleted(true);
         projectRepository.save(project);
     }
 
-    public ProjectResponse editProject(long projectId, CreateProjectRequest request, @NonNull User user)  {
+    public ProjectResponse editProject(Long projectId, CreateProjectRequest request, @NonNull User user)  {
+        Project project=getProjectAndCheckDetail(projectId,user);
+        project.setName(request.getName());
+        project.setDescription(request.getDescription());
+        Project saved=projectRepository.save(project);
+        return modelMapper.map(saved,ProjectResponse.class);
+    }
+
+    private Project getProjectAndCheckDetail(Long projectId, User user){
         Project project=projectRepository.findByIdAndDeletedFalse(projectId).orElseThrow(()->new ResourceNotFoundException("resource with this project id is not found"));
 
         if (!project.getUser().getId().equals(user.getId())){
             throw new OperationNotAllowedException("Bad request");
         }
-        project.setName(request.getName());
-        project.setDescription(request.getDescription());
-        Project saved=projectRepository.save(project);
-        return modelMapper.map(saved,ProjectResponse.class);
+        return project;
     }
 }
