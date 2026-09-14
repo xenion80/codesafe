@@ -10,6 +10,7 @@ import com.vulprioritizer.backend_part.user.entity.User;
 import com.vulprioritizer.backend_part.user.repository.UserRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NonNull;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +25,7 @@ public class ProjectService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
 
-    public ProjectResponse createProject(@Valid CreateProjectRequest request, User user) {
+    public ProjectResponse createProject( CreateProjectRequest request, User user) {
         Project project=Project.builder()
                 .name(request.getName())
                 .description(request.getDescription())
@@ -56,7 +57,7 @@ public class ProjectService {
         projectRepository.save(project);
     }
 
-    public ProjectResponse editProject(long projectId, CreateProjectRequest request, User user)  {
+    public ProjectResponse editProject(long projectId, CreateProjectRequest request, @NonNull User user)  {
         Project project=projectRepository.findByIdAndDeletedFalse(projectId).orElseThrow(()->new ResourceNotFoundException("resource with this project id is not found"));
 
         if (!project.getUser().getId().equals(user.getId())){
