@@ -59,9 +59,9 @@ public class JWTFilter extends OncePerRequestFilter {
             }
 
         }catch (ExpiredJwtException e){
-            log.debug("JWT token has expired");
+            log.warn("JWT rejected: token has expired");
         }catch (JwtException e){
-            log.debug("Invalid jwt token: ",e);
+            log.warn("JWT rejected: invalid token ({})", e.getMessage());
         }
         filterChain.doFilter(request,response);
 

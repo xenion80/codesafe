@@ -48,6 +48,8 @@ public class JwtAuthService {
         return !isTokenExpired(token);
     }
 
+
+
     public String extractTokenType(String token) {
         Claims claims = extractAllClaims(token);
         return claims.get("type", String.class);

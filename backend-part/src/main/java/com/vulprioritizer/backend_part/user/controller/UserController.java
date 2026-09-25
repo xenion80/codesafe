@@ -13,7 +13,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/users")@RequiredArgsConstructor
+@RequestMapping("/users")
+@RequiredArgsConstructor
 public class UserController {
     private final ModelMapper modelMapper;
     private final UserService userService;

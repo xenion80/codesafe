@@ -93,7 +93,7 @@ public class ProjectController {
     }
 
 
-    @PostMapping("{/projectId]/targets}")
+    @PostMapping("{projectId}/targets")
     public ResponseEntity<ApiResponse<TargetResponse>> targetDetail(@Valid @RequestBody CreateTargetRequest request, @PathVariable Long projectId, Authentication authentication){
         User user=(User) authentication.getPrincipal();
         TargetResponse targetResponse=targetService.createTarget(request,projectId,user);
@@ -103,7 +103,7 @@ public class ProjectController {
     }
 
 
-    @GetMapping("{/projectId]/targets}")
+    @GetMapping("{projectId}/targets")
     public ResponseEntity<ApiResponse<Page<TargetResponse>>> getTargetsAssociatedWithProject (
             @PathVariable Long projectId,
             Authentication authentication,

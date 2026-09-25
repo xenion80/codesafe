@@ -61,17 +61,17 @@ public class TargetController {
         );
     }
 
-    @PostMapping("/{targetId}/discover")
-    public ResponseEntity<ApiResponse<List<EndpointResponse>>> discoverUrl(@PathVariable Long targetId, Authentication authentication){
-        User user=(User) authentication.getPrincipal();
-        List<EndpointResponse> endpoints=endpointService.discoverUrl(targetId,user);
+//    @PostMapping("/{targetId}/discover")
+//    public ResponseEntity<ApiResponse<List<EndpointResponse>>> discoverUrl(@PathVariable Long targetId, Authentication authentication){
+//        User user=(User) authentication.getPrincipal();
+//        List<EndpointResponse> endpoints=endpointService.discoverUrl(targetId,user);
 
-        return ResponseEntity.ok(
-                ApiResponse.success("Retrived endpoints successfully",endpoints)
-        );
-
-
-    }
+//        return ResponseEntity.ok(
+//                ApiResponse.success("Retrived endpoints successfully",endpoints)
+//        );
+//
+//
+//    }
 
 
 }

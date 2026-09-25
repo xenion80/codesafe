@@ -49,6 +49,7 @@ public class UserService implements UserDetailsService {
     public User getUserById(Long userId){
         return userRepository.findById(userId).orElseThrow(()->new BadCredentialsException("Userid not found"));
     }
+    @Transactional
     public UserResponse signUp(SignUpInputModel signUpInputModel){
         Optional<User> user=userRepository.findByEmail(signUpInputModel.getEmail());
         if(user.isPresent()){

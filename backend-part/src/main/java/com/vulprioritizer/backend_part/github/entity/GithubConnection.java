@@ -23,7 +23,7 @@ public class GithubConnection {
     @OneToOne
     private User user;
 
-    private String githubUserId;
+    private Long githubUserId;
 
     private String githubUsername;
 
