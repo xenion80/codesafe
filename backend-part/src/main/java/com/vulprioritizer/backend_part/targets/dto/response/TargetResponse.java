@@ -6,7 +6,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class CreateTargetResponse {
+public class TargetResponse {
 
     private Long id;
 

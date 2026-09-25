@@ -6,7 +6,7 @@ import com.vulprioritizer.backend_part.project.dto.request.CreateProjectRequest;
 import com.vulprioritizer.backend_part.project.dto.response.ProjectResponse;
 import com.vulprioritizer.backend_part.project.service.ProjectService;
 import com.vulprioritizer.backend_part.targets.dto.request.CreateTargetRequest;
-import com.vulprioritizer.backend_part.targets.dto.response.CreateTargetResponse;
+import com.vulprioritizer.backend_part.targets.dto.response.TargetResponse;
 import com.vulprioritizer.backend_part.targets.services.TargetService;
 import com.vulprioritizer.backend_part.user.entity.User;
 import jakarta.validation.Valid;
@@ -94,9 +94,9 @@ public class ProjectController {
 
 
     @PostMapping("{/projectId]/targets}")
-    public ResponseEntity<ApiResponse<CreateTargetResponse>> targetDetail(@Valid @RequestBody CreateTargetRequest request, @PathVariable Long projectId, Authentication authentication){
+    public ResponseEntity<ApiResponse<TargetResponse>> targetDetail(@Valid @RequestBody CreateTargetRequest request, @PathVariable Long projectId, Authentication authentication){
         User user=(User) authentication.getPrincipal();
-        CreateTargetResponse targetResponse=targetService.createTarget(request,projectId,user);
+        TargetResponse targetResponse=targetService.createTarget(request,projectId,user);
         return ResponseEntity.ok(
                 ApiResponse.success("Target created successfully",targetResponse)
         );
@@ -104,12 +104,12 @@ public class ProjectController {
 
 
     @GetMapping("{/projectId]/targets}")
-    public ResponseEntity<ApiResponse<Page<CreateTargetResponse>>> getTargetsAssociatedWithProject (
+    public ResponseEntity<ApiResponse<Page<TargetResponse>>> getTargetsAssociatedWithProject (
             @PathVariable Long projectId,
             Authentication authentication,
             @PageableDefault Pageable pageable){
         User user=(User) authentication.getPrincipal();
-        Page<CreateTargetResponse> targetResponse=targetService.getTargetsAssociatedWithProject(pageable,projectId,user);
+        Page<TargetResponse> targetResponse=targetService.getTargetsAssociatedWithProject(pageable,projectId,user);
         return ResponseEntity.ok(
                 ApiResponse.success("Successfully retrieved all target information",targetResponse)
         );

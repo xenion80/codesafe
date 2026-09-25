@@ -5,7 +5,7 @@ import com.vulprioritizer.backend_part.common.exception.ResourceNotFoundExceptio
 import com.vulprioritizer.backend_part.project.entity.Project;
 import com.vulprioritizer.backend_part.project.repository.ProjectRepository;
 import com.vulprioritizer.backend_part.targets.dto.request.CreateTargetRequest;
-import com.vulprioritizer.backend_part.targets.dto.response.CreateTargetResponse;
+import com.vulprioritizer.backend_part.targets.dto.response.TargetResponse;
 import com.vulprioritizer.backend_part.targets.entity.Target;
 import com.vulprioritizer.backend_part.targets.repository.TargetRepository;
 import com.vulprioritizer.backend_part.user.entity.User;
@@ -24,7 +24,7 @@ public class TargetService {
     private final TargetRepository targetRepository;
     private final ModelMapper modelMapper;
 
-    public CreateTargetResponse createTarget(CreateTargetRequest request, Long projectId, User user) {
+    public TargetResponse createTarget(CreateTargetRequest request, Long projectId, User user) {
         Project project=getProjectAndCheckDetail(user,projectId);
 
             Target target=Target.builder()
@@ -38,36 +38,37 @@ public class TargetService {
                     .deleted(false)
                     .build();
             Target saved=targetRepository.save(target);
-            return modelMapper.map(saved,CreateTargetResponse.class);
+            return modelMapper.map(saved, TargetResponse.class);
 
 
 
 
     }
 
-    public Page<CreateTargetResponse> getTargetsAssociatedWithProject(Pageable pageable, Long projectId, User user) {
+    public Page<TargetResponse> getTargetsAssociatedWithProject(Pageable pageable, Long projectId, User user) {
         Project project=getProjectAndCheckDetail(user,projectId);
 
         return targetRepository.findByProjectAndDeletedFalse(pageable,project);
     }
 
-    public CreateTargetResponse getTarget(User user, Long targetId) {
+    public TargetResponse getTarget(User user, Long targetId) {
         Target target=getTargetAndCheckDetail(user, targetId);
 
-        return modelMapper.map(target,CreateTargetResponse.class);
+        return modelMapper.map(target, TargetResponse.class);
 
     }
 
-    public CreateTargetResponse editTarget(User user, Long targetId,  CreateTargetRequest request) {
+    public TargetResponse editTarget(User user, Long targetId, CreateTargetRequest request) {
 
         Target target=getTargetAndCheckDetail(user,targetId);
         target.setName(request.getName());
         target.setDescription(request.getDescription());
         target.setType(request.getType());
         target.setUrl(request.getBaseUrl());
+        target.setUpdated_at(LocalDateTime.now());
         Target saved=targetRepository.save(target);
 
-        return modelMapper.map(saved,CreateTargetResponse.class);
+        return modelMapper.map(saved, TargetResponse.class);
 
 
 

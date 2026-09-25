@@ -8,7 +8,6 @@ import com.vulprioritizer.backend_part.project.entity.Project;
 import com.vulprioritizer.backend_part.project.repository.ProjectRepository;
 import com.vulprioritizer.backend_part.user.entity.User;
 import com.vulprioritizer.backend_part.user.repository.UserRepository;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.modelmapper.ModelMapper;
