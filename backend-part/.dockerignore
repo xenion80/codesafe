@@ -1,0 +1,35 @@
+# Build context hygiene: keep the image build fast and secret-free.
+
+# Build output / version control
+target/
+.git/
+.gitignore
+.gitattributes
+
+# IDE and editor files
+.idea/
+.vscode/
+*.iml
+
+# Logs and temp files
+logs/
+*.log
+
+# Environment / secrets — never bake these into an image
+.env
+.env.*
+
+# OS noise
+.DS_Store
+Thumbs.db
+
+# Docs and tooling not needed in the image
+HELP.md
+Dockerfile
+.dockerignore
+
+# Desktop-app workspace metadata
+.freebuff/
+
+# Windows wrapper variant (not used inside Linux images)
+mvnw.cmd
