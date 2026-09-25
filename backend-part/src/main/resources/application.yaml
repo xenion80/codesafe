@@ -3,14 +3,19 @@ spring:
     name: backend-part
 
   datasource:
-    url: jdbc:postgresql://ep-steep-band-b57dcrm-pooler.c-7.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require
+    url: jdbc:postgresql://dpg-darbrk49v7es73e1ar9g-a.oregon-postgres.render.com:5432/cybertotal
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
 
   jpa:
     hibernate:
       ddl-auto: update
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
 
 
 jwt:
