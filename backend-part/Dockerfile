@@ -9,7 +9,10 @@
 #
 # Required env at runtime (same as local dev):
 #   DB_USERNAME, DB_PASSWORD, JWT_SECRET
-#   Optional: GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, FRONTEND_URL
+#   Optional: GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET,
+#             GITHUB_REDIRECT_URI (set this on deployed instances, e.g.
+#             https://your-app.example.com/integrations/github/callback),
+#             FRONTEND_URL
 # ===========================================================================
 
 # ---------- Stage 1: build ----------

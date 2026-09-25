@@ -9,6 +9,7 @@ import com.vulprioritizer.backend_part.github.repository.GithubConnectionReposit
 import com.vulprioritizer.backend_part.user.entity.User;
 import com.vulprioritizer.backend_part.user.repository.UserRepository;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
@@ -202,10 +203,23 @@ public class GithubOAuthService {
                     .build()
                     .parseSignedClaims(state)
                     .getPayload();
+        } catch (ExpiredJwtException e) {
+            log.warn("GitHub OAuth state rejected: expired (consent took longer than {} minutes). "
+                    + "Restart the /integrations/github/authorize flow.", STATE_TTL_MS / 60000);
+            throw new IllegalArgumentException(
+                    "OAuth state expired - restart the GitHub connection flow ("
+                            + "GET /integrations/github/authorize, then complete consent within "
+                            + (STATE_TTL_MS / 60000) + " minutes)");
         } catch (JwtException | IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid OAuth state");
+            log.warn("GitHub OAuth state rejected: signature/type check failed ({}) - the callback "
+                    + "must reach the SAME backend (same JWT_SECRET) that generated the state", e.getMessage());
+            throw new IllegalArgumentException(
+                    "Invalid OAuth state (signature check failed). The backend receiving the GitHub "
+                            + "callback must be the same instance that served /integrations/github/authorize "
+                            + "(same JWT_SECRET), and github.redirect-uri (GITHUB_REDIRECT_URI) must point at it");
         }
         if (!"oauth_state".equals(claims.get("type", String.class))) {
+            log.warn("GitHub OAuth state rejected: wrong token type '{}'", claims.get("type", String.class));
             throw new IllegalArgumentException("Invalid OAuth state");
         }
         try {
