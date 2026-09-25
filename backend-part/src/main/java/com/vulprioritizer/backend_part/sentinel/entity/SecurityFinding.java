@@ -45,7 +45,6 @@ public class SecurityFinding {
     @JoinColumn(name = "endpoint_id")
     private Endpoint endpoint;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "check_type", nullable = false, length = 64)
     private String checkType;
 
