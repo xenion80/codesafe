@@ -30,7 +30,7 @@ public class Target {
     @Column(nullable = false)
     private String url;
 
-    @ManyToOne(fetch=FetchType.EAGER)
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name = "Project_id",nullable = false)
     private Project project;
 

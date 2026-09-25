@@ -26,7 +26,7 @@ public class WebSecurityConfig {
                 .formLogin(form->form.disable())
                 .csrf(csrf->csrf.disable())
                 .httpBasic(httpBasic->httpBasic.disable())
-                .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+                .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(
                         auth->auth
                                 .requestMatchers(PUBLIC_ENDPOINTS).permitAll()

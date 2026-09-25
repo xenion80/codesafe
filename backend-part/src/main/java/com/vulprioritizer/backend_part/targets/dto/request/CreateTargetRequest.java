@@ -16,5 +16,6 @@ public class CreateTargetRequest {
     @NotBlank(message = "Base URL is required")
     private String baseUrl;
 
+    @NotBlank(message = "Target description is required")
     private String description;
 }

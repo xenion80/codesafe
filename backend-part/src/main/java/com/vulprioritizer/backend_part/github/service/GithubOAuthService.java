@@ -193,11 +193,7 @@ public class GithubOAuthService {
         return connection.getGithubUsername();
     }
 
-    /**
-     * Verifies signature, type and expiry of the OAuth state and returns the user id it
-     * was issued for. Throws {@link IllegalArgumentException} for tampered, wrong-type
-     * or expired states (mapped to 400 by the global exception handler).
-     */
+
     private Long validateStateAndGetUserId(String state) {
         Claims claims;
         try {
@@ -224,7 +220,7 @@ public class GithubOAuthService {
         String accessToken = getCurrentUserGithubToken();
 
         return restClient.get()
-                .uri("https://api.github.com/user/repos")
+                .uri("https://api.github.com/user/repos?per_page=100&sort=updated")
                 .header(
                         HttpHeaders.AUTHORIZATION,
                         "Bearer " + accessToken

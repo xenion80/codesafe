@@ -55,7 +55,7 @@ public class GlobalExceptionHandler {
     }
     @ExceptionHandler(OperationNotAllowedException.class)
     public ResponseEntity<ApiError> OperationNotAllowedExceptionException(OperationNotAllowedException exception,HttpServletRequest request){
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiError(exception.getMessage(),HttpStatus.UNAUTHORIZED,request.getRequestURI()));
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ApiError(exception.getMessage(),HttpStatus.FORBIDDEN,request.getRequestURI()));
     }
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleException(Exception exception,HttpServletRequest request){

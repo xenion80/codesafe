@@ -23,6 +23,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -30,7 +31,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.lang.module.ResolutionException;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -47,9 +47,13 @@ public class AuthService {
     private final ForgotPasswordResetTokenRepository forgotPasswordResetTokenRepository;
     private final EmailService emailService;
 
+    @Value("${app.base-url}")
+    private String baseUrl;
+
     @Transactional
     public void verify(String token) {
-        EmailVerificationToken emailVerificationToken=emailVerificationTokenRepository.findByToken(token).orElseThrow(()->new ResolutionException("Invalid verification token"));
+        EmailVerificationToken emailVerificationToken = emailVerificationTokenRepository.findByToken(token)
+                .orElseThrow(() -> new TokenNotFoundException("Invalid verification token"));
         if(emailVerificationToken.getExpiresAt().isBefore(LocalDateTime.now())){
             throw new IllegalArgumentException("The token has been expired");
         }
@@ -145,8 +149,8 @@ public class AuthService {
 
 
 
-    private String buildResetPasswordUrl(String token){
-        return "http://localhost:8080/auth/reset-password?token="+token;
+    private String buildResetPasswordUrl(String token) {
+        return baseUrl + "/auth/reset-password?token=" + token;
     }
 
 

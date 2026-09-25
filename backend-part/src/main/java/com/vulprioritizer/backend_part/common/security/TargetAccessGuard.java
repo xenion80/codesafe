@@ -30,7 +30,7 @@ public class TargetAccessGuard {
      */
     public Target getOwnedTargetOrThrow(User user, Long targetId) {
         Target target = targetRepository.findByIdAndDeletedFalse(targetId)
-                .orElseThrow(() -> new ResourceNotFoundException("Target with this id not found &{targetId}"));
+                .orElseThrow(() -> new ResourceNotFoundException("Target not found: " + targetId));
 
         if (!target.getProject().getUser().getId().equals(user.getId())) {
             throw new OperationNotAllowedException("You are not allowed to perform this action");

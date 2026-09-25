@@ -48,6 +48,9 @@ public class AuthController {
         LoginResponse loginResponse=authService.login(loginRequest);
         Cookie cookie=new Cookie("refreshToken",loginResponse.getRefreshToken());
         cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setAttribute("SameSite", "Strict");
+        cookie.setPath("/auth");
         response.addCookie(cookie);
         return ResponseEntity.ok(ApiResponse.success("Logged in successfully",loginResponse));
 
@@ -62,7 +65,11 @@ public class AuthController {
 
     @PostMapping("/refresh")
     public ResponseEntity<ApiResponse<LoginResponse>> refresh(HttpServletRequest request){
-        String token= Arrays.stream(request.getCookies())
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null) {
+            throw new AuthenticationServiceException("Refresh token not found in request");
+        }
+        String token = Arrays.stream(cookies)
                 .filter(cookie -> "refreshToken".equals(cookie.getName()))
                 .findFirst()
                 .map(Cookie::getValue)

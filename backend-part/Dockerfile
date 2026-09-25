@@ -39,8 +39,8 @@ USER appuser
 # works for both layered and non-layered layouts.
 COPY --from=build /workspace/target/*.jar app.jar
 
-# Container-aware JVM: memory limits follow cgroups; DLL avoids libjemalloc
-# style native conflicts and is the recommended default for Spring Boot jars.
+# Container-aware JVM: heap limits follow cgroup limits; JAVA_OPTS can be
+# used to add tuning flags at runtime without rebuilding the image.
 ENV JAVA_OPTS=""
 
 EXPOSE 8080

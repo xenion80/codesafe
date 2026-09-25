@@ -15,6 +15,7 @@ import com.vulprioritizer.backend_part.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 
@@ -38,13 +39,15 @@ public class UserService implements UserDetailsService {
     private final EmailVerificationTokenRepository tokenRepository;
     private final RefreshTokenRepository refreshTokenRepository;
 
+    @Value("${app.base-url}")
+    private String baseUrl;
+
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return userRepository.findByEmail(email).orElseThrow(()->new UsernameNotFoundException("User of this email not found"));
     }
-    private String buildVerifyEmailUrl(String token){
-
-        return "http://localhost:8080/auth/verify-email?token=" + token;
+    private String buildVerifyEmailUrl(String token) {
+        return baseUrl + "/auth/verify-email?token=" + token;
     }
     public User getUserById(Long userId){
         return userRepository.findById(userId).orElseThrow(()->new BadCredentialsException("Userid not found"));

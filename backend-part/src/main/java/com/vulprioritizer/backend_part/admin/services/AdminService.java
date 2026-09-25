@@ -6,6 +6,7 @@ import com.vulprioritizer.backend_part.common.exception.ResourceNotFoundExceptio
 import com.vulprioritizer.backend_part.user.dto.response.UserResponse;
 import com.vulprioritizer.backend_part.user.entity.User;
 import com.vulprioritizer.backend_part.user.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -20,6 +21,7 @@ public class AdminService {
     private final ModelMapper modelMapper;
     private final RefreshTokenRepository refreshTokenRepository;
 
+    @Transactional
     public UserResponse disableUser(Long id) {
         User user=userRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("User with this id not found"));
         user.setEnabled(false);

@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 @Repository
 public interface EndpointRepository extends JpaRepository<Endpoint, Long> {
-    Optional<List<Endpoint>> findByTarget(Target target);
+    List<Endpoint> findByTarget(Target target);
     Optional<Endpoint> findByTargetAndPathAndMethod(
             Target target,
             String path,
