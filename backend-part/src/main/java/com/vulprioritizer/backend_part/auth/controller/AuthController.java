@@ -37,12 +37,6 @@ public class AuthController {
         );
 
     }
-    @GetMapping("/verify-email")
-    public ResponseEntity<ApiResponse<String>> verify(@RequestParam String token){
-        authService.verify(token);
-        return ResponseEntity.ok(ApiResponse.success("Email is verified successfully",null));
-
-    }
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<LoginResponse>> login(@Valid@RequestBody LoginRequest loginRequest, HttpServletRequest request, HttpServletResponse response){
         LoginResponse loginResponse=authService.login(loginRequest);

@@ -3,10 +3,8 @@ package com.vulprioritizer.backend_part.auth.services;
 
 import com.vulprioritizer.backend_part.auth.dto.Request.LoginRequest;
 import com.vulprioritizer.backend_part.auth.dto.Response.LoginResponse;
-import com.vulprioritizer.backend_part.auth.entity.EmailVerificationToken;
 import com.vulprioritizer.backend_part.auth.entity.ForgotPasswordResetToken;
 import com.vulprioritizer.backend_part.auth.entity.RefreshToken;
-import com.vulprioritizer.backend_part.auth.repository.EmailVerificationTokenRepository;
 import com.vulprioritizer.backend_part.auth.repository.ForgotPasswordResetTokenRepository;
 import com.vulprioritizer.backend_part.auth.repository.RefreshTokenRepository;
 import com.vulprioritizer.backend_part.common.exception.InvalidTokenException;
@@ -20,10 +18,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -36,33 +32,15 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class AuthService {
     private final AuthenticationManager manager;
     private final JwtAuthService jwtAuthService;
     private final PasswordEncoder passwordEncoder;
-    private final EmailVerificationTokenRepository emailVerificationTokenRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserRepository userRepository;
     private final ForgotPasswordResetTokenRepository forgotPasswordResetTokenRepository;
-    private final EmailService emailService;
-
-    @Value("${app.base-url}")
-    private String baseUrl;
-
-    @Transactional
-    public void verify(String token) {
-        EmailVerificationToken emailVerificationToken = emailVerificationTokenRepository.findByToken(token)
-                .orElseThrow(() -> new TokenNotFoundException("Invalid verification token"));
-        if(emailVerificationToken.getExpiresAt().isBefore(LocalDateTime.now())){
-            throw new IllegalArgumentException("The token has been expired");
-        }
-        User user=emailVerificationToken.getUser();
-        user.setEmailVerified(true);
-        user.setEnabled(true);
-        userRepository.save(user);
-        emailVerificationTokenRepository.delete(emailVerificationToken);
-    }
 
     public LoginResponse login(@Valid LoginRequest loginRequest) {
         Authentication authentication= manager.authenticate(
@@ -119,8 +97,14 @@ public class AuthService {
 
     }
 
+    /**
+     * Creates a password-reset token. The email/SMTP dependency has been
+     * removed, so the token cannot be delivered by mail; it is logged here as a
+     * development-only workaround. Re-add a mail service or another out-of-band
+     * channel before production use.
+     */
     @Transactional
-    public void requestPasswordReset(@Email(message = "enter correct email") @NotBlank(message = "the email section cannot be blank") String email) {
+    public void requestPasswordReset(String email) {
         Optional<User> optionalUser=userRepository.findByEmail(email);
         if(optionalUser.isEmpty())return;
         User user=optionalUser.get();
@@ -130,8 +114,9 @@ public class AuthService {
         passwordResetToken.setUser(user);
         passwordResetToken.setExpiresAt(LocalDateTime.now().plusMinutes(20));
         forgotPasswordResetTokenRepository.save(passwordResetToken);
-        String url=buildResetPasswordUrl(token);
-        emailService.sendMail(user.getEmail(),"Reset Password","click here: "+url);
+        log.warn("SMTP removed: password-reset token for {} (expires in 20 min): {} - "
+                + "deliver it out-of-band, then POST /auth/reset-password "
+                + "with body { \"token\": ..., \"newPassword\": ... }", email, token);
     }
     @Transactional
     public void resetPassword( String token, String newPassword) {
@@ -147,11 +132,6 @@ public class AuthService {
 
 
 
-
-
-    private String buildResetPasswordUrl(String token) {
-        return baseUrl + "/auth/reset-password?token=" + token;
-    }
 
 
 }

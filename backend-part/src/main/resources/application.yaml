@@ -21,7 +21,6 @@ spring:
 jwt:
     secretKey: ${JWT_SECRET}
 app:
-  base-url: ${BASE_URL}
   # Where the GitHub OAuth callback redirects after a successful connection.
   # Leave empty while there is no frontend: the backend then serves its own
   # success page. Once the SPA exists set it, e.g. FRONTEND_URL=http://localhost:5173,

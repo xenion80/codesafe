@@ -8,9 +8,8 @@
 # Run:    docker run --rm -p 8080:8080 --env-file .env cybertotal-backend
 #
 # Required env at runtime (same as local dev):
-#   DB_USERNAME, DB_PASSWORD, JWT_SECRET, BASE_URL
-#   Optional: MAIL_USERNAME, MAIL_PASSWORD, GITHUB_CLIENT_ID,
-#             GITHUB_CLIENT_SECRET, FRONTEND_URL
+#   DB_USERNAME, DB_PASSWORD, JWT_SECRET
+#   Optional: GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, FRONTEND_URL
 # ===========================================================================
 
 # ---------- Stage 1: build ----------

@@ -29,7 +29,7 @@ public class User implements UserDetails {
     private String name;
     private String email;
     private String password;
-    private boolean enabled;
+    private boolean enabled=true;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -38,7 +38,7 @@ public class User implements UserDetails {
     private Role role;
 
     private boolean active=true;
-    private boolean emailVerified;
+
 
 
     @Override
