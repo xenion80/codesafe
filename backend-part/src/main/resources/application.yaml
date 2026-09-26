@@ -22,7 +22,7 @@ jwt:
     secretKey: ${JWT_SECRET}
 app:
 
-  frontend-url: ${FRONTEND_URL:}
+  frontend-url: ${FRONTEND_URL:${BASE_URL:}}
 github:
   client-id: ${GITHUB_CLIENT_ID}
   client-secret: ${GITHUB_CLIENT_SECRET}
