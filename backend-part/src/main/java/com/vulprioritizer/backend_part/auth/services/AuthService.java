@@ -97,19 +97,26 @@ public class AuthService {
     }
 
     @Transactional
-    public void requestPasswordReset(String email) {
-        Optional<User> optionalUser=userRepository.findByEmail(email);
-        if(optionalUser.isEmpty())return;
-        User user=optionalUser.get();
-        String token= UUID.randomUUID().toString();
-        ForgotPasswordResetToken passwordResetToken=new ForgotPasswordResetToken();
+    public String requestPasswordReset(String email) {
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+        if (optionalUser.isEmpty()) {
+            // Return null silently — don't leak whether account exists
+            return null;
+        }
+        User user = optionalUser.get();
+
+        // Invalidate any previous tokens for this user first
+        forgotPasswordResetTokenRepository.deleteByUser(user);
+
+        String token = UUID.randomUUID().toString();
+        ForgotPasswordResetToken passwordResetToken = new ForgotPasswordResetToken();
         passwordResetToken.setToken(token);
         passwordResetToken.setUser(user);
         passwordResetToken.setExpiresAt(LocalDateTime.now().plusMinutes(20));
         forgotPasswordResetTokenRepository.save(passwordResetToken);
-        log.warn("SMTP removed: password-reset token for {} (expires in 20 min): {} - "
-                + "deliver it out-of-band, then POST /auth/reset-password "
-                + "with body { \"token\": ..., \"newPassword\": ... }", email, token);
+
+        log.info("Password reset token generated for {} (expires in 20 min): {}", email, token);
+        return token;
     }
     @Transactional
     public void resetPassword( String token, String newPassword) {

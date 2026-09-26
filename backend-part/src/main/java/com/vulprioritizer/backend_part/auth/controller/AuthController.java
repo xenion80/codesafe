@@ -74,9 +74,15 @@ public class AuthController {
     }
     @PostMapping("/forgot-password")
     public ResponseEntity<ApiResponse<String>> forgot_password(@Valid @RequestBody ForgotPasswordRequest request){
-        authService.requestPasswordReset(request.getEmail());
+        String resetToken = authService.requestPasswordReset(request.getEmail());
+        if (resetToken == null) {
+            // Don't reveal whether the account exists
+            return ResponseEntity.ok(
+                    ApiResponse.success("If an account with this email exists, a reset token has been generated. Check the response data.", null)
+            );
+        }
         return ResponseEntity.ok(
-                ApiResponse.success("If account with this email exists, a reset password link will be sent",null)
+                ApiResponse.success("Reset token generated. Copy the token from 'data' and use it with /auth/reset-password.", resetToken)
         );
     }
 

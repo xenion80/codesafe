@@ -699,27 +699,82 @@ function initEventListeners() {
   dom.startWebsiteScanBtn.addEventListener('click', runWebsiteSecurityScan);
   dom.startCodeScanBtn.addEventListener('click', runCodeSecurityScan);
 
-  // Forgot Password
   dom.forgotPasswordLink.addEventListener('click', (e) => {
     e.preventDefault();
+    // Reset to step 1 whenever the modal opens
+    document.getElementById('forgotStep1').classList.remove('hidden');
+    document.getElementById('forgotStep2').classList.add('hidden');
+    dom.forgotEmail.value = '';
     openModal(dom.forgotPasswordModal);
   });
 
+  // Step 1: Request token from backend
   dom.submitForgotBtn.addEventListener('click', async () => {
     const email = dom.forgotEmail.value.trim();
     if (!email) {
       showToast('Please enter your email.', 'error');
       return;
     }
+    setBtnLoading(dom.submitForgotBtn, true, 'Generating...');
     try {
-      await apiFetch('/auth/forgot-password', {
+      const res = await apiFetch('/auth/forgot-password', {
         method: 'POST',
         body: JSON.stringify({ email })
       });
-      showToast('If the email exists, a reset link was sent.', 'success');
+      const token = res.data;
+      if (!token) {
+        // Account not found — show gentle message, stay on step 1
+        showToast('No account found with that email.', 'error');
+        return;
+      }
+      // Populate step 2 with the token
+      document.getElementById('resetTokenDisplay').value = token;
+      document.getElementById('resetNewPassword').value = '';
+      document.getElementById('forgotStep1').classList.add('hidden');
+      document.getElementById('forgotStep2').classList.remove('hidden');
+      showToast('Token generated! Copy it and set your new password.', 'success');
+    } catch (err) {
+      showToast(err.message || 'Failed to generate reset token.', 'error');
+    } finally {
+      setBtnLoading(dom.submitForgotBtn, false);
+    }
+  });
+
+  // Copy token button
+  document.getElementById('copyTokenBtn').addEventListener('click', () => {
+    const tokenVal = document.getElementById('resetTokenDisplay').value;
+    if (tokenVal) {
+      navigator.clipboard.writeText(tokenVal).then(() => showToast('Token copied to clipboard!', 'success'));
+    }
+  });
+
+  // Back to step 1
+  document.getElementById('backToStep1Btn').addEventListener('click', () => {
+    document.getElementById('forgotStep1').classList.remove('hidden');
+    document.getElementById('forgotStep2').classList.add('hidden');
+  });
+
+  // Step 2: Reset password using token
+  document.getElementById('submitResetBtn').addEventListener('click', async () => {
+    const token = document.getElementById('resetTokenDisplay').value.trim();
+    const newPassword = document.getElementById('resetNewPassword').value;
+    if (!token || !newPassword) {
+      showToast('Token and new password are required.', 'error');
+      return;
+    }
+    const resetBtn = document.getElementById('submitResetBtn');
+    setBtnLoading(resetBtn, true, 'Resetting...');
+    try {
+      await apiFetch('/auth/reset-password', {
+        method: 'POST',
+        body: JSON.stringify({ token, newPassword })
+      });
+      showToast('Password reset successfully! You can now log in.', 'success');
       closeModal(dom.forgotPasswordModal);
     } catch (err) {
-      showToast(err.message, 'error');
+      showToast(err.message || 'Failed to reset password. Token may have expired.', 'error');
+    } finally {
+      setBtnLoading(resetBtn, false);
     }
   });
 

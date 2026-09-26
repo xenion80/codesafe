@@ -369,14 +369,43 @@
           <button class="modal-close" data-close="forgotPasswordModal">✕</button>
         </div>
         <div class="modal-body">
-          <p class="modal-subtitle">Enter your account email to receive a password reset token.</p>
-          <div class="form-group">
-            <label for="forgotEmail">Email Address</label>
-            <input type="email" id="forgotEmail" placeholder="you@domain.com" />
+
+          <!-- Step 1: Request Token -->
+          <div id="forgotStep1">
+            <p class="modal-subtitle">Enter your account email to generate a password reset token.</p>
+            <div class="form-group">
+              <label for="forgotEmail">Email Address</label>
+              <input type="email" id="forgotEmail" placeholder="you@domain.com" />
+            </div>
+            <button type="button" id="submitForgotBtn" class="btn btn-primary-cyan">
+              <span class="btn-text">Generate Reset Token</span>
+              <span class="btn-spinner hidden">⟳</span>
+            </button>
           </div>
-          <button type="button" id="submitForgotBtn" class="btn btn-primary-cyan">
-            <span>Send Reset Request</span>
-          </button>
+
+          <!-- Step 2: Use Token to reset (shown after step 1) -->
+          <div id="forgotStep2" class="hidden">
+            <p class="modal-subtitle">Your reset token is shown below. Copy it and enter your new password.</p>
+            <div class="form-group">
+              <label>Reset Token</label>
+              <div style="display:flex;gap:8px;align-items:center;">
+                <input type="text" id="resetTokenDisplay" readonly style="font-family:monospace;font-size:0.8rem;flex:1;" />
+                <button type="button" id="copyTokenBtn" class="btn" style="padding:6px 12px;font-size:0.8rem;">Copy</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="resetNewPassword">New Password</label>
+              <input type="password" id="resetNewPassword" placeholder="Enter new password" />
+            </div>
+            <div style="display:flex;gap:10px;">
+              <button type="button" id="submitResetBtn" class="btn btn-primary-cyan" style="flex:1;">
+                <span class="btn-text">Reset Password</span>
+                <span class="btn-spinner hidden">⟳</span>
+              </button>
+              <button type="button" id="backToStep1Btn" class="btn" style="padding:10px 16px;">Back</button>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
