@@ -385,12 +385,16 @@
 
           <!-- Step 2: Use Token to reset (shown after step 1) -->
           <div id="forgotStep2" class="hidden">
-            <p class="modal-subtitle">Your reset token is shown below. Copy it and enter your new password.</p>
+            <p class="modal-subtitle">Your reset token is shown below. Copy it and set your new password.</p>
             <div class="form-group">
               <label>Reset Token</label>
-              <div style="display:flex;gap:8px;align-items:center;">
-                <input type="text" id="resetTokenDisplay" readonly style="font-family:monospace;font-size:0.8rem;flex:1;" />
-                <button type="button" id="copyTokenBtn" class="btn" style="padding:6px 12px;font-size:0.8rem;">Copy</button>
+              <div style="display:flex;gap:8px;align-items:stretch;">
+                <input type="text" id="resetTokenDisplay" readonly
+                  style="font-family:monospace;font-size:0.78rem;flex:1;min-width:0;padding:0.5rem 0.6rem;border-radius:6px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.05);color:#e2e8f0;" />
+                <button type="button" id="copyTokenBtn" class="btn btn-dark-outline btn-auto"
+                  style="padding:0.5rem 1rem;font-size:0.82rem;">
+                  📋 Copy
+                </button>
               </div>
             </div>
             <div class="form-group">
@@ -398,11 +402,13 @@
               <input type="password" id="resetNewPassword" placeholder="Enter new password" />
             </div>
             <div style="display:flex;gap:10px;">
-              <button type="button" id="submitResetBtn" class="btn btn-primary-cyan" style="flex:1;">
+              <button type="button" id="submitResetBtn" class="btn btn-primary-cyan" style="flex:1;width:auto;">
                 <span class="btn-text">Reset Password</span>
                 <span class="btn-spinner hidden">⟳</span>
               </button>
-              <button type="button" id="backToStep1Btn" class="btn" style="padding:10px 16px;">Back</button>
+              <button type="button" id="backToStep1Btn" class="btn btn-dark-outline btn-auto">
+                ← Back
+              </button>
             </div>
           </div>
 

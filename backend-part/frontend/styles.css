@@ -499,6 +499,13 @@ body {
   box-shadow: 0 0 16px rgba(2, 132, 199, 0.4);
 }
 
+
+/* Utility: auto-width button (overrides full-width default) */
+.btn-auto {
+  width: auto !important;
+  flex-shrink: 0;
+}
+
 /* Spinner inside button */
 .btn-spinner {
   width: 16px;
