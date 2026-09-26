@@ -1,0 +1,11 @@
+{
+  "name": "cyber-total-frontend",
+  "version": "1.0.0",
+  "description": "Minimal static frontend for CyberTotal AI Vulnerability Prioritizer",
+  "private": true,
+  "scripts": {
+    "start": "npx -y serve -l 3000 .",
+    "dev": "npx -y serve -l 3000 ."
+  },
+  "keywords": ["cybersecurity", "static-site", "frontend"]
+}

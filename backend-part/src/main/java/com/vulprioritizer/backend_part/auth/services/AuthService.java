@@ -1,6 +1,5 @@
 package com.vulprioritizer.backend_part.auth.services;
 
-
 import com.vulprioritizer.backend_part.auth.dto.Request.LoginRequest;
 import com.vulprioritizer.backend_part.auth.dto.Response.LoginResponse;
 import com.vulprioritizer.backend_part.auth.entity.ForgotPasswordResetToken;
@@ -97,12 +96,6 @@ public class AuthService {
 
     }
 
-    /**
-     * Creates a password-reset token. The email/SMTP dependency has been
-     * removed, so the token cannot be delivered by mail; it is logged here as a
-     * development-only workaround. Re-add a mail service or another out-of-band
-     * channel before production use.
-     */
     @Transactional
     public void requestPasswordReset(String email) {
         Optional<User> optionalUser=userRepository.findByEmail(email);
@@ -129,9 +122,5 @@ public class AuthService {
         forgotPasswordResetTokenRepository.deleteByUser(user);
 
     }
-
-
-
-
 
 }

@@ -10,10 +10,6 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-/**
- * Directed behavioral graph node for a session.
- * Schema: behavior_node (V1__cyber_total_foundation.sql).
- */
 @Entity
 @Table(name = "behavior_node")
 @Getter
@@ -31,11 +27,9 @@ public class BehaviorNode {
     @JoinColumn(name = "agent_session_id", nullable = false)
     private AgentSession agentSession;
 
-    /** Stable node identity within the session graph. */
     @Column(name = "node_key", nullable = false, length = 128)
     private String nodeKey;
 
-    /** e.g. REQUEST | CANARY_HIT | AUTH_FAILURE. */
     @Column(name = "node_type", nullable = false, length = 32)
     private String nodeType;
 

@@ -1,6 +1,5 @@
 package com.vulprioritizer.backend_part.admin.services;
 
-
 import com.vulprioritizer.backend_part.auth.repository.RefreshTokenRepository;
 import com.vulprioritizer.backend_part.common.exception.ResourceNotFoundException;
 import com.vulprioritizer.backend_part.user.dto.response.UserResponse;

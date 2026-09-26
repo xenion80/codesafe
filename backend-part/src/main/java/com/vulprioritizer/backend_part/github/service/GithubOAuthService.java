@@ -38,7 +38,6 @@ import java.util.UUID;
 @Slf4j
 public class GithubOAuthService {
 
-    /** OAuth state lifetime: the user must complete the consent within this window. */
     private static final long STATE_TTL_MS = 1000 * 60 * 10;
 
     @Value("${github.client-id}")
@@ -73,14 +72,6 @@ public class GithubOAuthService {
         );
     }
 
-    /**
-     * Builds a self-contained, signed OAuth state for {@code user}.
-     *
-     * <p>The state is a short-lived JWT (subject = user id, signed with the app's JWT
-     * key) instead of a value kept in the HTTP session. The OAuth flow therefore works
-     * even when the authorization request and the GitHub callback arrive from different
-     * clients (e.g. API client + browser), and later from the SPA frontend.</p>
-     */
     public String generateState(User user) {
         return Jwts.builder()
                 .subject(user.getId().toString())
@@ -92,19 +83,13 @@ public class GithubOAuthService {
                 .compact();
     }
 
-    /**
-     * Exchanges the OAuth code, stores the connection and returns the connected
-     * GitHub username (used by the callback redirect / success page).
-     */
     public String handleCallback(
             String code,
             String state
     ) {
 
-        // Validate the signed OAuth state and resolve the initiating user.
         Long userId = validateStateAndGetUserId(state);
 
-        // Exchange authorization code for GitHub access token
         GithubTokenResponse tokenResponse;
         try {
             tokenResponse = restClient.post()
@@ -139,7 +124,6 @@ public class GithubOAuthService {
 
         String accessToken = tokenResponse.getAccessToken();
 
-        // Fetch authenticated GitHub user profile
         GithubUserResponse githubUser;
         try {
             githubUser = restClient.get()
@@ -172,13 +156,11 @@ public class GithubOAuthService {
             );
         }
 
-        // Find application user
         User user = userRepository.findById(userId)
                 .orElseThrow(() ->
                         new UsernameNotFoundException("User not found")
                 );
 
-        // Update existing connection or create a new one
         GithubConnection connection = githubConnectionRepository
                 .findByUser(user)
                 .orElseGet(GithubConnection::new);
@@ -188,12 +170,16 @@ public class GithubOAuthService {
         connection.setGithubUserId(githubUser.getId());
         connection.setGithubUsername(githubUser.getLogin());
         connection.setConnectedAt(LocalDateTime.now());
+        connection.setExpiresAt(
+                tokenResponse.getExpiresIn() != null
+                        ? LocalDateTime.now().plusSeconds(tokenResponse.getExpiresIn())
+                        : null
+        );
 
         githubConnectionRepository.save(connection);
         log.debug("GitHub OAuth state validated and connection saved for user {}", userId);
         return connection.getGithubUsername();
     }
-
 
     private Long validateStateAndGetUserId(String state) {
         Claims claims;
@@ -263,4 +249,9 @@ public class GithubOAuthService {
 
         return integration.getAccessToken();
     }
+
+    public java.util.Optional<GithubConnection> getConnectedUser(User user) {
+        return githubConnectionRepository.findByUser(user);
+    }
 }
+

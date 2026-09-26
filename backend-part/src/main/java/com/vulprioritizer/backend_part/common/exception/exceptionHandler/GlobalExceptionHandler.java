@@ -1,6 +1,5 @@
 package com.vulprioritizer.backend_part.common.exception.exceptionHandler;
 
-
 import com.vulprioritizer.backend_part.common.exception.*;
 import com.vulprioritizer.backend_part.common.response.ApiError;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -11,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {

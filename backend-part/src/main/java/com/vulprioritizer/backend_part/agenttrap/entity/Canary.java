@@ -10,10 +10,6 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-/**
- * Canary sensor embedded into pages or twin responses.
- * Schema: canary (V1__cyber_total_foundation.sql).
- */
 @Entity
 @Table(name = "canary")
 @Getter
@@ -35,7 +31,6 @@ public class Canary {
     @Column(name = "canary_type", nullable = false, length = 32)
     private CanaryType canaryType;
 
-    /** Unique, non-sensitive marker value. */
     @Column(nullable = false, unique = true, length = 128)
     private String identifier;
 

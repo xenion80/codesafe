@@ -12,10 +12,6 @@ import org.hibernate.type.SqlTypes;
 import java.time.LocalDateTime;
 import java.util.Map;
 
-/**
- * Aggregate result captured for each completed scan run.
- * Schema: scan_result (V1__cyber_total_foundation.sql).
- */
 @Entity
 @Table(name = "scan_result")
 @Getter
@@ -45,7 +41,6 @@ public class ScanResult {
     @Column(name = "checked_at", nullable = false)
     private LocalDateTime checkedAt;
 
-    /** Structured per-check rollup. */
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
     private Map<String, Object> details;

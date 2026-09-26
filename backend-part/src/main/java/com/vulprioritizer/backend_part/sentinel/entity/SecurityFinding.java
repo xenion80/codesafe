@@ -14,10 +14,6 @@ import org.hibernate.type.SqlTypes;
 import java.time.LocalDateTime;
 import java.util.Map;
 
-/**
- * Individual security finding produced by a scan.
- * Schema: security_finding (V1__cyber_total_foundation.sql).
- */
 @Entity
 @Table(name = "security_finding")
 @Getter
@@ -35,12 +31,10 @@ public class SecurityFinding {
     @JoinColumn(name = "scan_id", nullable = false)
     private SentinelScan scan;
 
-    /** Denormalized for fast per-target queries; always the scan's target. */
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "target_id", nullable = false)
     private Target target;
 
-    /** Nullable: some findings are target-level rather than endpoint-level. */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "endpoint_id")
     private Endpoint endpoint;
@@ -58,12 +52,10 @@ public class SecurityFinding {
     @Column
     private String description;
 
-    /** Sanitized observation only — never secrets. */
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
     private Map<String, Object> evidence;
 
-    /** Actionable recommendation (also mirrored in remediation_recommendation). */
     @Column
     private String remediation;
 

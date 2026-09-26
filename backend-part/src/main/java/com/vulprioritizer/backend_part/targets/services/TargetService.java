@@ -40,9 +40,6 @@ public class TargetService {
             Target saved=targetRepository.save(target);
             return modelMapper.map(saved, TargetResponse.class);
 
-
-
-
     }
 
     public Page<TargetResponse> getTargetsAssociatedWithProject(Pageable pageable, Long projectId, User user) {
@@ -70,16 +67,12 @@ public class TargetService {
 
         return modelMapper.map(saved, TargetResponse.class);
 
-
-
     }
-
 
     public void deleteTarget(User user, Long targetId) {
         Target target=getTargetAndCheckDetail(user,targetId);
         target.setDeleted(true);
         targetRepository.save(target);
-
 
     }
     private Target getTargetAndCheckDetail(User user,Long targetId){

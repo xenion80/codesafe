@@ -21,20 +21,10 @@ spring:
 jwt:
     secretKey: ${JWT_SECRET}
 app:
-  # Where the GitHub OAuth callback redirects after a successful connection.
-  # Leave empty while there is no frontend: the backend then serves its own
-  # success page. Once the SPA exists set it, e.g. FRONTEND_URL=http://localhost:5173,
-  # and the callback redirects to <frontend>/settings/integrations?connected=github.
+
   frontend-url: ${FRONTEND_URL:}
 github:
   client-id: ${GITHUB_CLIENT_ID}
   client-secret: ${GITHUB_CLIENT_SECRET}
-  # Where GitHub sends the browser after consent. This MUST exactly match the
-  # callback URL registered in your GitHub OAuth App, and it must point at the
-  # SAME backend instance that served /integrations/github/authorize — the
-  # OAuth state is a JWT signed with that instance's JWT_SECRET, so a different
-  # instance rejects it with "Invalid OAuth state".
-  # Local default below; for a deployed backend set e.g.
-  # GITHUB_REDIRECT_URI=https://your-app.onrender.com/integrations/github/callback
-  # and register that same URL in the GitHub OAuth App settings.
+
   redirect-uri: ${GITHUB_REDIRECT_URI:http://localhost:8080/integrations/github/callback}

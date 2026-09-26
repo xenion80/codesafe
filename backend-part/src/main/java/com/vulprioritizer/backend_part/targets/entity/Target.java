@@ -42,7 +42,4 @@ public class Target {
 
     private Boolean deleted=false;
 
-
-
-
 }

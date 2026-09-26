@@ -9,7 +9,11 @@ public class GithubTokenResponse {
     @JsonProperty("access_token")
     private String accessToken;
 
+    @JsonProperty("token_type")
     private String tokenType;
 
     private String scope;
+
+    @JsonProperty("expires_in")
+    private Long expiresIn;
 }

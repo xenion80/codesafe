@@ -1,6 +1,5 @@
 package com.vulprioritizer.backend_part.auth.repository;
 
-
 import com.vulprioritizer.backend_part.auth.entity.RefreshToken;
 import com.vulprioritizer.backend_part.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -17,13 +17,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.LocalDateTime;
 
-/**
- * Application service for endpoint discovery: authorization (User -> Project -> Target),
- * crawl orchestration and persistence of discovered URLs as GET {@link Endpoint} rows.
- *
- * <p>Crawling itself (fetch, parse, BFS) lives in {@link CrawlerService}; this class only
- * decides <em>what</em> gets persisted and reports the summary.</p>
- */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -33,16 +26,6 @@ public class EndpointService {
     private final EndpointRepository endpointRepository;
     private final CrawlerService crawlerService;
 
-    /**
-     * Crawls the target's base URL and upserts every discovered page as a GET endpoint.
-     *
-     * @throws ResourceNotFoundException  when the target does not exist (or is deleted)
-     * @throws OperationNotAllowedException when the authenticated user does not own the
-     *                                    target's project
-     */
-    // Deliberately NOT @Transactional: the crawl performs network I/O that can take
-    // minutes, and holding a DB connection open for it would starve the pool.
-    // Each endpoint upsert below commits in its own implicit transaction.
     public DiscoveryResponse discoverEndpoints(Long targetId, User user) {
         Target target = getTargetAndCheckOwnership(user, targetId);
 
@@ -69,7 +52,6 @@ public class EndpointService {
         );
     }
 
-    /** Loads the target and enforces User -> Project -> Target ownership. */
     private Target getTargetAndCheckOwnership(User user, Long targetId) {
         Target target = targetRepository.findByIdAndDeletedFalse(targetId)
                 .orElseThrow(() -> new ResourceNotFoundException("Target not found: " + targetId));
@@ -80,13 +62,6 @@ public class EndpointService {
         return target;
     }
 
-    /**
-     * Creates the GET endpoint for {@code url} if no endpoint with the same
-     * (target, path, method) exists yet; otherwise re-activates the existing row and
-     * refreshes its updatedAt.
-     *
-     * @return true when a new endpoint row was inserted
-     */
     private boolean upsertEndpoint(Target target, String url) {
         String path = extractPath(url);
         if (path == null) {
@@ -118,7 +93,6 @@ public class EndpointService {
         return true;
     }
 
-    /** Path (without query/fragment) of a normalized URL; null when malformed. */
     private String extractPath(String url) {
         try {
             URI uri = new URI(url);

@@ -9,10 +9,6 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-/**
- * Membership of a fingerprint in a threat cluster.
- * Schema: threat_cluster_member (V1__cyber_total_foundation.sql).
- */
 @Entity
 @Table(name = "threat_cluster_member")
 @Getter

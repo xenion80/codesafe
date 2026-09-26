@@ -1,6 +1,5 @@
 package com.vulprioritizer.backend_part.auth.controller;
 
-
 import com.vulprioritizer.backend_part.auth.dto.Request.ForgotPasswordRequest;
 import com.vulprioritizer.backend_part.auth.dto.Request.LoginRequest;
 import com.vulprioritizer.backend_part.auth.dto.Request.ResetPasswordRequest;

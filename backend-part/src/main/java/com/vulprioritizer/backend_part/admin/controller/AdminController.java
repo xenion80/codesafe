@@ -1,6 +1,5 @@
 package com.vulprioritizer.backend_part.admin.controller;
 
-
 import com.vulprioritizer.backend_part.admin.services.AdminService;
 import com.vulprioritizer.backend_part.common.response.ApiResponse;
 import com.vulprioritizer.backend_part.user.dto.response.UserResponse;

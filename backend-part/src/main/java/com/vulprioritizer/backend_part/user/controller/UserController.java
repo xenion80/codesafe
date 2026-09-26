@@ -1,6 +1,5 @@
 package com.vulprioritizer.backend_part.user.controller;
 
-
 import com.vulprioritizer.backend_part.common.response.ApiResponse;
 import com.vulprioritizer.backend_part.user.dto.request.ModifyUserDetailRequest;
 import com.vulprioritizer.backend_part.user.dto.response.UserResponse;

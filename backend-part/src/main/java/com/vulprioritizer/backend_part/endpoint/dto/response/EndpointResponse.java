@@ -7,9 +7,6 @@ import lombok.Value;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-/**
- * DTO for {@link com.vulprioritizer.backend_part.endpoint.entity.Endpoint}
- */
 @Data
 public class EndpointResponse {
     Long id;

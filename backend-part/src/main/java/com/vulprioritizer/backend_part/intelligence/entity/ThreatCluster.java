@@ -9,10 +9,6 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-/**
- * Threat cluster grouping similar fingerprints.
- * Schema: threat_cluster (V1__cyber_total_foundation.sql).
- */
 @Entity
 @Table(name = "threat_cluster")
 @Getter

@@ -20,7 +20,6 @@ public class Project {
     @Column(nullable = false)
     private String name;
 
-
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -32,7 +31,5 @@ public class Project {
 
     @Column(nullable = false)
     private Boolean deleted=false;
-
-
 
 }

@@ -42,5 +42,4 @@ public class Endpoint {
     @Column(nullable = false)
     private boolean active;
 
-
 }

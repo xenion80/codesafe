@@ -10,10 +10,6 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-/**
- * Directed edge between behavior nodes (observed transition).
- * Schema: behavior_edge (V1__cyber_total_foundation.sql).
- */
 @Entity
 @Table(name = "behavior_edge")
 @Getter

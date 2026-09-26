@@ -13,10 +13,6 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-/**
- * Alert raised for a target (from findings or intelligence signals).
- * Schema: security_alert (V1__cyber_total_foundation.sql).
- */
 @Entity
 @Table(name = "security_alert")
 @Getter
@@ -34,12 +30,10 @@ public class SecurityAlert {
     @JoinColumn(name = "target_id", nullable = false)
     private Target target;
 
-    /** Nullable: alerts may originate from scans (no session). */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "agent_session_id")
     private AgentSession agentSession;
 
-    /** Nullable: alerts may originate from sessions (no finding). */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "security_finding_id")
     private SecurityFinding securityFinding;

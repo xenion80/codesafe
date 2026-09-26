@@ -12,10 +12,6 @@ import org.hibernate.type.SqlTypes;
 import java.time.LocalDateTime;
 import java.util.Map;
 
-/**
- * Historical classification result for a session (re-classifications appended).
- * Schema: agent_classification (V1__cyber_total_foundation.sql).
- */
 @Entity
 @Table(name = "agent_classification")
 @Getter

@@ -15,24 +15,14 @@ import java.time.Duration;
 import java.util.Locale;
 import java.util.Set;
 
-/**
- * Default {@link PageFetcher} backed by the JDK {@link HttpClient} (no extra dependency).
- *
- * <p>Redirects are followed manually and only within the origin of the originally
- * requested URL: a {@code Location} pointing at another host or an unsupported scheme
- * is never followed (the crawler is strictly same-origin). Cross-origin redirects are
- * reported as {@code HTTP_ERROR} results instead.</p>
- */
 @Component
 public class HttpPageFetcher implements PageFetcher {
 
     private static final Logger log = LoggerFactory.getLogger(HttpPageFetcher.class);
 
-    /** Per-request timeout (crawler v1 default: 10 seconds). */
     static final Duration REQUEST_TIMEOUT = Duration.ofSeconds(10);
     private static final Duration CONNECT_TIMEOUT = Duration.ofSeconds(10);
 
-    /** Bounded redirect hops so a redirect loop cannot spin forever. */
     private static final int MAX_REDIRECT_HOPS = 5;
 
     private static final Set<String> ALLOWED_SCHEMES = Set.of("http", "https");
@@ -46,7 +36,6 @@ public class HttpPageFetcher implements PageFetcher {
                 .build());
     }
 
-    /** Visible for tests. */
     HttpPageFetcher(HttpClient httpClient) {
         this.httpClient = httpClient;
     }
@@ -91,7 +80,6 @@ public class HttpPageFetcher implements PageFetcher {
                 return PageResult.success(statusCode, response.body());
             }
 
-            // 3xx: follow only same-origin redirects back to the originally requested origin.
             if (statusCode >= 300 && statusCode < 400) {
                 String location = response.headers().firstValue("Location").orElse(null);
                 URI next = location == null ? null : safeResolve(current, location);
@@ -135,7 +123,6 @@ public class HttpPageFetcher implements PageFetcher {
         }
     }
 
-    /** scheme + host + effective port comparison; default ports (80/443) are ignored. */
     private static boolean isSameOrigin(URI a, URI b) {
         return originOf(a).equals(originOf(b));
     }
@@ -152,7 +139,7 @@ public class HttpPageFetcher implements PageFetcher {
             };
         }
         if ((("http".equals(scheme) && port == 80)) || ("https".equals(scheme) && port == 443)) {
-            port = -2; // default port: omit
+            port = -2;
         }
         return port == -2 ? scheme + "://" + host : scheme + "://" + host + ":" + port;
     }

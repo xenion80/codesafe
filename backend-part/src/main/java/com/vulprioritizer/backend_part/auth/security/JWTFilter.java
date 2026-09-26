@@ -1,6 +1,5 @@
 package com.vulprioritizer.backend_part.auth.security;
 
-
 import com.vulprioritizer.backend_part.auth.services.JwtAuthService;
 import com.vulprioritizer.backend_part.user.entity.User;
 import com.vulprioritizer.backend_part.user.repository.UserRepository;
@@ -19,7 +18,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -32,15 +30,18 @@ public class JWTFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
-
-        try{
-            String header =request.getHeader("Authorization");
-            if (header==null||!header.startsWith("Bearer ")) {
+        try {
+            String token = null;
+            String header = request.getHeader("Authorization");
+            if (header != null && header.startsWith("Bearer ")) {
+                token = header.substring(7);
+            } else if (request.getParameter("token") != null && !request.getParameter("token").isBlank()) {
+                token = request.getParameter("token");
+            }
+            if (token == null) {
                 filterChain.doFilter(request, response);
-
                 return;
             }
-            String token=header.substring(7);
             if(!jwtAuthService.isTokenValid(token)){
                 filterChain.doFilter(request,response);
                 return;
@@ -66,4 +67,5 @@ public class JWTFilter extends OncePerRequestFilter {
         filterChain.doFilter(request,response);
 
     }
+
 }

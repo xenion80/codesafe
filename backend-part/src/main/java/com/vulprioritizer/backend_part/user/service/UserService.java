@@ -1,6 +1,5 @@
 package com.vulprioritizer.backend_part.user.service;
 
-
 import com.vulprioritizer.backend_part.auth.repository.RefreshTokenRepository;
 import com.vulprioritizer.backend_part.common.exception.IdentityAlreadyExistException;
 import com.vulprioritizer.backend_part.user.dto.request.ModifyUserDetailRequest;
@@ -46,14 +45,11 @@ public class UserService implements UserDetailsService {
         }
         User user1=modelMapper.map(signUpInputModel,User.class);
         user1.setPassword(passwordEncoder.encode(signUpInputModel.getPassword()));
-        // Email verification removed along with the SMTP dependency:
-        // accounts are active immediately after sign-up.
         user1.setEnabled(true);
         user1.setRole(Role.USER);
 
         User saved=userRepository.save(user1);
         return modelMapper.map(saved,UserResponse.class);
-
 
     }
 

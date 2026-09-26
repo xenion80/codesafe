@@ -10,10 +10,6 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-/**
- * Recurring scan schedule for a target.
- * Schema: scan_schedule (V1__cyber_total_foundation.sql).
- */
 @Entity
 @Table(name = "scan_schedule")
 @Getter

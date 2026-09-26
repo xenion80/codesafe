@@ -23,7 +23,6 @@ public class TargetController {
     private final TargetService targetService;
     private final EndpointService endpointService;
 
-
     @GetMapping("/{targetId}")
     public ResponseEntity<ApiResponse<TargetResponse>> getTarget(
             Authentication authentication,
@@ -34,7 +33,6 @@ public class TargetController {
         return ResponseEntity.ok(
                 ApiResponse.success("Target found:",targetResponse)
         );
-
 
     }
     @PutMapping("/{targetId}")
@@ -60,18 +58,5 @@ public class TargetController {
                 ApiResponse.success("Target deleted successfully",null)
         );
     }
-
-//    @PostMapping("/{targetId}/discover")
-//    public ResponseEntity<ApiResponse<List<EndpointResponse>>> discoverUrl(@PathVariable Long targetId, Authentication authentication){
-//        User user=(User) authentication.getPrincipal();
-//        List<EndpointResponse> endpoints=endpointService.discoverUrl(targetId,user);
-
-//        return ResponseEntity.ok(
-//                ApiResponse.success("Retrived endpoints successfully",endpoints)
-//        );
-//
-//
-//    }
-
 
 }

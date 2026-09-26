@@ -13,10 +13,6 @@ import org.hibernate.type.SqlTypes;
 import java.time.LocalDateTime;
 import java.util.Map;
 
-/**
- * One scan execution of the Encrypted Sentinel against a target.
- * Schema: sentinel_scan (V1__cyber_total_foundation.sql).
- */
 @Entity
 @Table(name = "sentinel_scan")
 @Getter
@@ -46,12 +42,10 @@ public class SentinelScan {
 
     private LocalDateTime completedAt;
 
-    /** Flexible scan summary (pages checked, per-check counts). */
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
     private Map<String, Object> summary;
 
-    /** Failure reason when status = FAILED. */
     @Column(name = "error_message")
     private String errorMessage;
 

@@ -12,13 +12,8 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * Crawler v1 unit tests. All HTTP responses are stubbed via {@link StubPageFetcher};
- * no real website is ever contacted.
- */
 class CrawlerServiceTest {
 
-    /** Deterministic fake: serves canned bodies and records every requested URL. */
     private static class StubPageFetcher implements PageFetcher {
         private final Map<String, PageResult> responses;
         final List<String> requested = new java.util.ArrayList<>();
@@ -34,8 +29,6 @@ class CrawlerServiceTest {
             if (result != null) {
                 return result;
             }
-            // Default: any reachable same-origin URL behaves like a link-less page.
-            // Tests stub explicit failures (timeout/404) where they need them.
             return PageResult.success(200, "");
         }
     }
@@ -52,14 +45,12 @@ class CrawlerServiceTest {
         return PageResult.failure(FetchStatus.TIMEOUT, -1);
     }
 
-    /** Keys pages by the URL form the crawler actually fetches (normalized, trailing slash). */
     private static Map<String, PageResult> site(Map<String, String> pages) {
         Map<String, PageResult> responses = new HashMap<>();
         pages.forEach((path, html) -> responses.put("https://test.local" + normalizedPath(path), page(html)));
         return responses;
     }
 
-    /** Mirrors CrawlerService normalization: non-extension paths get a trailing slash. */
     private static String normalizedPath(String path) {
         String lastSegment = path.substring(path.lastIndexOf('/') + 1);
         boolean hasExtension = lastSegment.contains(".");
@@ -69,8 +60,6 @@ class CrawlerServiceTest {
     private static String a(String href) {
         return "<a href=\"" + href + "\">link</a>";
     }
-
-    // ---------------------------------------------------------------- same origin
 
     @Test
     void crawlsSameOriginUrls() {
@@ -99,8 +88,6 @@ class CrawlerServiceTest {
                 "/", a("https://google.com/") + a("https://github.com/x") + a("https://cdn.test.local/a")
                         + a("//evil.local/x") + a("/internal")
         )));
-        // Only the base URL is served; any external fetch would return 404 anyway,
-        // but the point is that the crawler must not even request them.
         CrawlerService crawler = new CrawlerService(fetcher);
 
         CrawlerService.CrawlResult result = crawler.crawl("https://test.local");
@@ -111,8 +98,6 @@ class CrawlerServiceTest {
         assertThat(fetcher.requested).allSatisfy(url ->
                 assertThat(url).startsWith("https://test.local"));
     }
-
-    // -------------------------------------------------------------- URL handling
 
     @Test
     void resolvesRelativeUrlsAgainstCurrentPage() {
@@ -156,7 +141,6 @@ class CrawlerServiceTest {
 
         CrawlerService.CrawlResult result = crawler.crawl("https://test.local");
 
-        // page=1 and page=2 must remain distinct, base page has no query.
         assertThat(result.discoveredUrls())
                 .extracting(CrawlerService.DiscoveredUrl::url)
                 .containsExactlyInAnyOrder(
@@ -164,8 +148,6 @@ class CrawlerServiceTest {
                         "https://test.local/products/?page=1",
                         "https://test.local/products/?page=2");
     }
-
-    // ------------------------------------------------------------- traversal rules
 
     @Test
     void doesNotCrawlTheSameUrlTwice() {
@@ -179,7 +161,7 @@ class CrawlerServiceTest {
         CrawlerService.CrawlResult result = crawler.crawl("https://test.local");
 
         assertThat(result.discoveredUrls()).hasSize(3);
-        assertThat(fetcher.requested).hasSize(3); // one request per unique URL
+        assertThat(fetcher.requested).hasSize(3);
     }
 
     @Test
@@ -195,7 +177,6 @@ class CrawlerServiceTest {
 
         CrawlerService.CrawlResult result = crawler.crawl("https://test.local");
 
-        // Depth 0: /, depth 1: /l1, depth 2: /l2, depth 3: /l3 — /l4 would be depth 4.
         assertThat(result.discoveredUrls())
                 .extracting(CrawlerService.DiscoveredUrl::url)
                 .containsExactlyInAnyOrder(
@@ -207,7 +188,6 @@ class CrawlerServiceTest {
 
     @Test
     void respectsMaximumPageCount() {
-        // Base page links to 60 children (depth 1); the crawler must stop at 50 pages.
         Map<String, String> pages = new HashMap<>();
         StringBuilder children = new StringBuilder();
         for (int i = 0; i < 60; i++) {
@@ -241,8 +221,6 @@ class CrawlerServiceTest {
                 .containsExactly("https://test.local/", "https://test.local/real-page/");
     }
 
-    // --------------------------------------------------------------- resilience
-
     @Test
     void continuesAfterFailedPages() {
         StubPageFetcher fetcher = new StubPageFetcher(site(Map.of(
@@ -250,7 +228,6 @@ class CrawlerServiceTest {
         )));
         fetcher.responses.put("https://test.local/timeout/", timeout());
         fetcher.responses.put("https://test.local/notfound/", httpError(404));
-        // /ok1 and /ok2 are served by `site()` above.
         CrawlerService crawler = new CrawlerService(fetcher);
 
         CrawlerService.CrawlResult result = crawler.crawl("https://test.local");

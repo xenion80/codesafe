@@ -9,10 +9,6 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-/**
- * Synthetic decoy resource served by the twin. Content is synthetic only.
- * Schema: decoy_resource (V1__cyber_total_foundation.sql).
- */
 @Entity
 @Table(name = "decoy_resource")
 @Getter
@@ -37,7 +33,6 @@ public class DecoyResource {
     @Column(name = "resource_type", nullable = false, length = 32)
     private DecoyResourceType resourceType;
 
-    /** Synthetic content only. */
     @Column
     private String content;
 

@@ -16,17 +16,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-/**
- * Crawler v1: same-origin BFS discovery of GET-reachable pages.
- *
- * <p>Responsibilities are deliberately limited to fetching, HTML parsing, link
- * extraction, URL resolution/normalization, same-origin validation and BFS traversal.
- * No persistence happens here — {@link EndpointService} turns the discovered URLs into
- * {@code Endpoint} rows.</p>
- *
- * <p>Default limits (crawler v1 constants): maxDepth = 3, maxPages = 50,
- * requestTimeout = 10s (see {@link HttpPageFetcher#REQUEST_TIMEOUT}).</p>
- */
 @Service
 public class CrawlerService {
 
@@ -35,11 +24,9 @@ public class CrawlerService {
     static final int MAX_DEPTH = 3;
     static final int MAX_PAGES = 50;
 
-    /** A discovered page: full normalized URL plus the BFS depth it was found at. */
     public record DiscoveredUrl(String url, int depth) {
     }
 
-    /** Termination reason of a crawl. */
     public enum CrawlStatus {
         COMPLETED,
         MAX_PAGES_REACHED,
@@ -48,11 +35,9 @@ public class CrawlerService {
         FAILED
     }
 
-    /** Result of one crawl run; only persistence-relevant data is exposed. */
     public record CrawlResult(CrawlStatus status, List<DiscoveredUrl> discoveredUrls, int pagesVisited, int failedRequests) {
     }
 
-    /** A fetch whose outcome the crawl can continue after. */
     private static final class FetchException extends Exception {
         private final PageFetcher.FetchStatus status;
 
@@ -68,13 +53,6 @@ public class CrawlerService {
         this.pageFetcher = pageFetcher;
     }
 
-    /**
-     * Crawls {@code baseUrl} breadth-first, restricted to the same origin
-     * (scheme + host + effective port), until the queue empties, {@link #MAX_PAGES}
-     * pages have been visited or {@link #MAX_DEPTH} is exhausted.
-     *
-     * <p>One failing page never aborts the crawl; failures are counted and skipped.</p>
-     */
     public CrawlResult crawl(String baseUrl) {
         long start = System.currentTimeMillis();
 
@@ -94,7 +72,6 @@ public class CrawlerService {
 
         while (!queue.isEmpty() && visited.size() < MAX_PAGES) {
             DiscoveredUrl current = queue.poll();
-            // Deduplicate: several parent pages often link to the same child.
             if (!visited.add(current.url())) {
                 continue;
             }
@@ -110,7 +87,6 @@ public class CrawlerService {
 
             discovered.add(current);
             if (current.depth() >= MAX_DEPTH) {
-                // Leaves at the deepest allowed level: parse but do not enqueue deeper.
                 continue;
             }
 
@@ -119,7 +95,6 @@ public class CrawlerService {
                 if (resolved == null || !isSameOrigin(resolved, origin)) {
                     continue;
                 }
-                // Skip obvious non-page resources (.jpg, .css, .js, ...).
                 if (resolved.getRawPath() != null && hasFileExtension(resolved.getRawPath())) {
                     continue;
                 }
@@ -135,7 +110,6 @@ public class CrawlerService {
         if (visited.size() >= MAX_PAGES) {
             status = CrawlStatus.MAX_PAGES_REACHED;
         } else if (discovered.isEmpty() && !visited.isEmpty()) {
-            // Every fetch failed — likely the target is unreachable at all.
             status = CrawlStatus.START_URL_UNREACHABLE;
         }
 
@@ -164,7 +138,6 @@ public class CrawlerService {
         throw new FetchException(PageFetcher.FetchStatus.CONNECTION_ERROR);
     }
 
-    /** Extracts {@code <a href>} values; malformed/blank hrefs and anchors are dropped. */
     List<String> extractLinks(String html) {
         Document document = Jsoup.parse(html == null ? "" : html);
         List<String> links = new ArrayList<>();
@@ -177,10 +150,6 @@ public class CrawlerService {
         return links;
     }
 
-    /**
-     * Resolves {@code href} (relative or absolute) against {@code pageUrl}.
-     * Returns {@code null} for malformed or non-http(s) URLs.
-     */
     URI resolve(String href, String pageUrl) {
         if (href == null || href.isBlank()) {
             return null;
@@ -190,7 +159,7 @@ public class CrawlerService {
             URI resolved = page.resolve(href.trim());
             String scheme = resolved.getScheme() == null ? null : resolved.getScheme().toLowerCase(Locale.ROOT);
             if (scheme == null || !(scheme.equals("http") || scheme.equals("https"))) {
-                return null; // mailto:, tel:, javascript:, ftp:, ...
+                return null;
             }
             if (resolved.getHost() == null) {
                 return null;
@@ -201,12 +170,10 @@ public class CrawlerService {
         }
     }
 
-    /** Strict same-origin check: scheme, host (case-insensitive) and effective port. */
     boolean isSameOrigin(URI uri, String origin) {
         return origin.equals(originOf(uri));
     }
 
-    /** scheme://host:effectivePort, with default ports (80/443) omitted. */
     private String originOf(URI uri) {
         String scheme = uri.getScheme() == null ? "" : uri.getScheme().toLowerCase(Locale.ROOT);
         String host = uri.getHost() == null ? "" : uri.getHost().toLowerCase(Locale.ROOT);
@@ -227,12 +194,6 @@ public class CrawlerService {
         return effective == -1 ? scheme + "://" + host : scheme + "://" + host + ":" + effective;
     }
 
-    /**
-     * Normalizes a URL so equivalent URLs collapse: lowercase scheme/host, default port
-     * removed, empty path -> "/", dot-segments resolved, fragment dropped, trailing
-     * slash added for directories only. Query parameters are preserved verbatim so
-     * {@code /products?page=1} and {@code /products?page=2} stay distinct.
-     */
     String normalize(URI uri) {
         String scheme = uri.getScheme() == null ? "" : uri.getScheme().toLowerCase(Locale.ROOT);
         String host = uri.getHost() == null ? "" : uri.getHost().toLowerCase(Locale.ROOT);
@@ -247,7 +208,6 @@ public class CrawlerService {
                 ? "/"
                 : removeDotSegments(uri.getRawPath());
 
-        // Only directory-style paths (no extension, no trailing slash) get one.
         if (!path.endsWith("/") && !hasFileExtension(path)) {
             path = path + "/";
         }
@@ -280,7 +240,6 @@ public class CrawlerService {
                 "pdf", "zip", "mp4", "mp3").contains(ext);
     }
 
-    /** RFC 3986-style removal of "." and ".." segments from a path. */
     private static String removeDotSegments(String path) {
         boolean trailingSlash = path.endsWith("/");
         String[] segments = path.split("/");

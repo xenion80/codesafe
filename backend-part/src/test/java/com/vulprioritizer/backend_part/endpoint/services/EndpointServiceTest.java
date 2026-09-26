@@ -55,11 +55,8 @@ class EndpointServiceTest {
         CrawlerService crawlerService = new CrawlerService(pageFetcher);
         endpointService = new EndpointService(targetRepository, endpointRepository, crawlerService);
 
-        // Default: any URL the crawler fetches answers with an empty page unless a
-        // test stubs something more specific.
         lenient().when(pageFetcher.fetch(any()))
                 .thenReturn(PageResult.success(200, ""));
-        // Default: no endpoint exists yet for any (target, path, method).
         lenient().when(endpointRepository.findByTargetAndPathAndMethod(any(), any(), any()))
                 .thenReturn(Optional.empty());
 
@@ -157,7 +154,6 @@ class EndpointServiceTest {
 
         DiscoveryResponse response = endpointService.discoverEndpoints(100L, owner);
 
-        // Both discovered pages ("/" and "/login/") already exist -> re-activated only.
         assertThat(response.getEndpointsDiscovered()).isEqualTo(2);
         assertThat(response.getNewEndpoints()).isZero();
         ArgumentCaptor<Endpoint> captor = ArgumentCaptor.forClass(Endpoint.class);

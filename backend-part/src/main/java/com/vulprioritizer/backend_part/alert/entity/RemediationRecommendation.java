@@ -10,10 +10,6 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-/**
- * Actionable remediation advice attached to a finding.
- * Schema: remediation_recommendation (V1__cyber_total_foundation.sql).
- */
 @Entity
 @Table(name = "remediation_recommendation")
 @Getter

@@ -13,10 +13,6 @@ import org.hibernate.type.SqlTypes;
 import java.time.LocalDateTime;
 import java.util.Map;
 
-/**
- * Incident report aggregating alerts for later export/review.
- * Schema: incident_report (V1__cyber_total_foundation.sql).
- */
 @Entity
 @Table(name = "incident_report")
 @Getter

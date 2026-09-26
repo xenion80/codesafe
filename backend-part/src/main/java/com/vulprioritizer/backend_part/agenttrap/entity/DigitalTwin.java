@@ -10,11 +10,6 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-/**
- * Isolated synthetic environment per target (Agent Trap Digital Twin).
- * The twin never touches production data; responses are synthetic only.
- * Schema: digital_twin (V1__cyber_total_foundation.sql).
- */
 @Entity
 @Table(name = "digital_twin")
 @Getter
@@ -32,11 +27,9 @@ public class DigitalTwin {
     @JoinColumn(name = "target_id", nullable = false, unique = true)
     private Target target;
 
-    /** Opaque routing key used by the local demo routing layer. */
     @Column(name = "twin_key", nullable = false, unique = true, length = 64)
     private String twinKey;
 
-    /** Local synthetic mount path. */
     @Column(name = "base_path", nullable = false)
     private String basePath;
 

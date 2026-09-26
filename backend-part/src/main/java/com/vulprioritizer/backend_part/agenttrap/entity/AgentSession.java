@@ -13,10 +13,6 @@ import org.hibernate.type.SqlTypes;
 import java.time.LocalDateTime;
 import java.util.Map;
 
-/**
- * One observed visitor session on a target.
- * Schema: agent_session (V1__cyber_total_foundation.sql).
- */
 @Entity
 @Table(name = "agent_session")
 @Getter
@@ -30,7 +26,6 @@ public class AgentSession {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /** Platform-generated opaque session id. */
     @Column(name = "session_id", nullable = false, unique = true, length = 64)
     private String sessionId;
 
@@ -42,11 +37,9 @@ public class AgentSession {
     @Column(length = 32)
     private ClassificationCategory classification;
 
-    /** 0.0 - 1.0 */
     @Column
     private Double confidence;
 
-    /** Contributing classification signals. */
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
     private Map<String, Object> signals;
