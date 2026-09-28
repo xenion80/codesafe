@@ -29,7 +29,8 @@ public class Project {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
+    @Builder.Default
     @Column(nullable = false)
-    private Boolean deleted=false;
+    private Boolean deleted = false;
 
 }

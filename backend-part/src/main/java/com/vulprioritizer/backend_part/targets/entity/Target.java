@@ -40,6 +40,7 @@ public class Target {
     @Column(nullable = false)
     private LocalDateTime updated_at;
 
-    private Boolean deleted=false;
+    @Builder.Default
+    private Boolean deleted = false;
 
 }

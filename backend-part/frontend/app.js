@@ -87,6 +87,7 @@ const dom = {
   profileGithubProject: document.getElementById('profileGithubProject'),
   githubStatusIndicator: document.getElementById('githubStatusIndicator'),
   refreshReposBtn: document.getElementById('refreshReposBtn'),
+  disconnectGithubBtn: document.getElementById('disconnectGithubBtn'),
   logoutBtn: document.getElementById('logoutBtn'),
 
   // Repositories Section
@@ -486,6 +487,7 @@ function updateGitHubConnectedState(username) {
   dom.githubStatusIndicator.textContent = `✓ GitHub connected as ${state.githubUsername}`;
   dom.githubStatusIndicator.className = 'github-status connected';
   dom.refreshReposBtn.classList.remove('hidden');
+  if (dom.disconnectGithubBtn) dom.disconnectGithubBtn.classList.remove('hidden');
   dom.gitLoginPill.textContent = 'Connected ✓';
 }
 
@@ -495,9 +497,29 @@ function updateGitHubDisconnectedState() {
   dom.githubStatusIndicator.textContent = 'GitHub not connected.';
   dom.githubStatusIndicator.className = 'github-status not-connected';
   dom.refreshReposBtn.classList.add('hidden');
+  if (dom.disconnectGithubBtn) dom.disconnectGithubBtn.classList.add('hidden');
   dom.gitLoginPill.textContent = 'Connect GitHub →';
   dom.reposEmptyState.classList.remove('hidden');
   dom.reposListGrid.classList.add('hidden');
+}
+
+async function disconnectGitHub() {
+  if (!confirm('Are you sure you want to disconnect your GitHub account?')) return;
+  try {
+    await apiFetch('/integrations/github', { method: 'DELETE' });
+    showToast('GitHub disconnected successfully.', 'info');
+  } catch (err) {
+    console.warn('Disconnect error:', err);
+    showToast(err.message || 'Failed to disconnect GitHub', 'error');
+  } finally {
+    state.githubUsername = null;
+    state.selectedRepo = null;
+    state.repositories = [];
+    localStorage.removeItem(CONFIG.STORAGE_KEYS.SELECTED_PROJECT);
+    dom.profileGithubProject.value = '';
+    if (dom.codeSelectedRepo) dom.codeSelectedRepo.value = '';
+    updateGitHubDisconnectedState();
+  }
 }
 
 // ==================== UI STATE MANAGEMENT ====================
@@ -680,6 +702,10 @@ function initEventListeners() {
     loadRepositories();
     showToast('Refreshing repositories...', 'info');
   });
+
+  if (dom.disconnectGithubBtn) {
+    dom.disconnectGithubBtn.addEventListener('click', disconnectGitHub);
+  }
 
   // Modal Closures
   document.querySelectorAll('[data-close]').forEach((btn) => {

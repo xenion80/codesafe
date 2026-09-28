@@ -767,6 +767,21 @@ body {
   color: var(--cyan-primary);
 }
 
+.disconnect-link {
+  background: none;
+  border: none;
+  color: #f87171;
+  font-size: 0.78rem;
+  cursor: pointer;
+  text-decoration: underline;
+  transition: var(--transition);
+  margin-left: 0.5rem;
+}
+
+.disconnect-link:hover {
+  color: #ef4444;
+}
+
 /* Repositories Section */
 .repos-section {
   margin-top: 1rem;

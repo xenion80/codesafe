@@ -253,5 +253,11 @@ public class GithubOAuthService {
     public java.util.Optional<GithubConnection> getConnectedUser(User user) {
         return githubConnectionRepository.findByUser(user);
     }
+
+    @org.springframework.transaction.annotation.Transactional
+    public void disconnect(User user) {
+        githubConnectionRepository.findByUser(user)
+                .ifPresent(githubConnectionRepository::delete);
+    }
 }
 

@@ -32,7 +32,7 @@ build/
 ### VS Code ###
 
 .vscode/
-<<<<<<< Updated upstream
+ <<<<<<< Updated upstream
 /src/main/resources/application-local.yaml/
 /src/main/resources/application-local.yaml
 .freebuff

@@ -49,15 +49,9 @@ public class GithubOAuthController {
 
         String githubUsername = githubOAuthService.handleCallback(code, state);
 
-        if (frontendUrl == null || frontendUrl.isBlank()) {
-            return ResponseEntity.ok()
-                    .contentType(MediaType.TEXT_HTML)
-                    .body(successPage(githubUsername));
-        }
-        return ResponseEntity
-                .status(HttpStatus.FOUND)
-                .location(URI.create(frontendUrl + "/settings/integrations?connected=github"))
-                .build();
+        return ResponseEntity.ok()
+                .contentType(MediaType.TEXT_HTML)
+                .body(successPage(githubUsername));
     }
 
     @GetMapping("/url")
@@ -96,7 +90,36 @@ public class GithubOAuthController {
         );
     }
 
+    @DeleteMapping({"", "/disconnect"})
+    public ResponseEntity<?> disconnect() {
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) authentication.getPrincipal();
+        githubOAuthService.disconnect(user);
+        return ResponseEntity.ok(java.util.Map.of(
+                "connected", false,
+                "message", "GitHub account disconnected successfully"
+        ));
+    }
+
+    @PostMapping("/disconnect")
+    public ResponseEntity<?> disconnectPost() {
+        return disconnect();
+    }
+
+    private String resolveFrontendTargetUrl() {
+        if (frontendUrl == null || frontendUrl.isBlank()) {
+            return "/?connected=github";
+        }
+        String trimmed = frontendUrl.trim();
+        while (trimmed.endsWith("/")) {
+            trimmed = trimmed.substring(0, trimmed.length() - 1);
+        }
+        return trimmed + "/?connected=github";
+    }
+
     private String successPage(String githubUsername) {
+        String targetUrl = resolveFrontendTargetUrl();
         return "<!DOCTYPE html><html><head><meta charset=\"utf-8\">"
                 + "<title>GitHub connected</title>"
                 + "<style>body{font-family:system-ui,-apple-system,sans-serif;background:#070b13;color:#e6edf3;"
@@ -113,13 +136,16 @@ public class GithubOAuthController {
                 + "<button class=\"btn\" onclick=\"returnToApp()\">Return to CyberTotal</button>"
                 + "</div>"
                 + "<script>"
+                + "var targetUrl = '" + escapeHtml(targetUrl) + "';"
                 + "function returnToApp() {"
-                + "  if (window.opener) { window.close(); } else { window.location.href = '/'; }"
+                + "  if (window.opener) { window.close(); } else { window.location.href = targetUrl; }"
                 + "}"
                 + "try {"
                 + "  if (window.opener) {"
                 + "    window.opener.postMessage({ type: 'GITHUB_OAUTH_SUCCESS', username: '" + escapeHtml(githubUsername) + "' }, '*');"
                 + "    setTimeout(function() { window.close(); }, 1200);"
+                + "  } else {"
+                + "    setTimeout(function() { window.location.href = targetUrl; }, 1500);"
                 + "  }"
                 + "} catch(e) {}"
                 + "</script>"
