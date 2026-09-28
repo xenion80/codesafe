@@ -32,6 +32,11 @@ build/
 ### VS Code ###
 
 .vscode/
+<<<<<<< Updated upstream
 /src/main/resources/application-local.yaml/
 /src/main/resources/application-local.yaml
 .freebuff
+=======
+# Local application configuration
+/src/main/resources/application-local.yaml
+>>>>>>> Stashed changes
